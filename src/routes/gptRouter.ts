@@ -20,8 +20,8 @@ router.post("/api/error-solution", async (req, res) => {
   try {
     const data = await service.codeErrorSolution({
       code: prompt,
-      description: description,
-      stack: stack,
+      description,
+      stack,
       mode: BUDDY_MODE.CODE_ERROR_SOLUTION,
     });
 
@@ -37,8 +37,8 @@ router.post("/api/code-explanation", async (req, res) => {
   try {
     const data = await service.codeExplanation({
       code: prompt,
-      description: description,
-      stack: stack,
+      description,
+      stack,
       mode: BUDDY_MODE.CODE_EXPLANATION,
     });
 
@@ -54,12 +54,36 @@ router.post("/api/code-refactoring", async (req, res) => {
   try {
     const data = await service.codeRefactoring({
       code: prompt,
-      description: description,
-      stack: stack,
+      description,
+      stack,
       mode: BUDDY_MODE.CODE_REFACTORING,
     });
 
     return res.json(data);
+  } catch (error) {
+    return error;
+  }
+});
+
+router.post("/api/newRoom", async (req, res) => {
+  const { containerUid } = req.body;
+  try {
+    const data = await service.createchatRoom({
+      containerUid,
+    });
+    res.send({ result: true, data });
+  } catch (error) {
+    return error;
+  }
+});
+
+router.get("/api/roomList", async (req, res) => {
+  const { containerUid } = req.query;
+  try {
+    const data = await service.getRoomList({
+      containerUid,
+    });
+    res.send({ result: true, data: { rooms: data } });
   } catch (error) {
     return error;
   }

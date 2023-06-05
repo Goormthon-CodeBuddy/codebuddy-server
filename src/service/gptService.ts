@@ -2,6 +2,7 @@
 const { Configuration, OpenAIApi } = require("openai");
 const { GPT_TEMPLATE } = require("../constant/gpt.constants");
 const modchatMessage = require("../model/chatMessage");
+const modchatRoom = require("../model/chatRoom");
 
 const openAIConfig = new Configuration({
   apiKey: "<APIKEY>",
@@ -161,5 +162,23 @@ exports.codeRefactoring = async ({
     };
   } catch (e) {
     return e;
+  }
+};
+
+exports.createchatRoom = async ({ containerUid }: { containerUid: string }) => {
+  try {
+    const newroom = await modchatRoom.createRoom({ containerUid });
+    return newroom;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getRoomList = async ({ containerUid }: { containerUid: string }) => {
+  try {
+    const rooms = await modchatRoom.getRoomList({ containerUid });
+    return rooms;
+  } catch (error) {
+    throw error;
   }
 };
