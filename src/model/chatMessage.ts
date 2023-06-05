@@ -16,8 +16,12 @@ module.exports = {
       created_at: new Date(),
     }),
 
-  getHistory: async (room_index: any) =>
-    await messagedb.chatMessage.get({
-      room_index,
-    }),
+  getHistory: async (room_index: number) => {
+    try {
+      const messages = await messagedb.chatMessage.find({ room_index });
+      return messages;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

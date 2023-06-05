@@ -92,13 +92,14 @@ router.get("/api/roomList", async (req, res) => {
   }
 });
 
-router.get("api/room/:room_index", async (req, res) => {
-  const { room_index } = req.params;
+router.get("/api/room/:room_index", async (req, res) => {
+  const room_index = parseInt(req.params.room_index, 10);
   try {
     const data = await service.getRoomHistory({
       room_index,
     });
-    res.send({ result: true, data });
+
+    res.send({ result: true, data: { messages: data } });
   } catch (error) {
     return error;
   }

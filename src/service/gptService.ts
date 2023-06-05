@@ -227,7 +227,7 @@ exports.getRoomList = async ({ containerUid }: { containerUid: string }) => {
 
 exports.getRoomHistory = async ({ room_index }: { room_index: number }) => {
   try {
-    const histories = await modchatRoom.getHistory({ room_index });
+    const histories = await modchatMessage.getHistory(room_index);
     return histories;
   } catch (error) {
     throw error;
