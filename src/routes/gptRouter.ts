@@ -15,13 +15,14 @@ router.get(
 );
 
 router.post("/api/error-solution", async (req, res) => {
-  const { stack = "", prompt, description = "" } = req.body;
+  const { stack = "", prompt, description = "", roomIndex } = req.body;
 
   try {
     const data = await service.codeErrorSolution({
       code: prompt,
       description,
       stack,
+      roomIndex,
       mode: BUDDY_MODE.CODE_ERROR_SOLUTION,
     });
 
@@ -32,13 +33,14 @@ router.post("/api/error-solution", async (req, res) => {
 });
 
 router.post("/api/code-explanation", async (req, res) => {
-  const { stack = "", prompt, description = "" } = req.body;
+  const { stack = "", prompt, description = "", roomIndex } = req.body;
 
   try {
     const data = await service.codeExplanation({
       code: prompt,
       description,
       stack,
+      roomIndex,
       mode: BUDDY_MODE.CODE_EXPLANATION,
     });
 
@@ -49,13 +51,14 @@ router.post("/api/code-explanation", async (req, res) => {
 });
 
 router.post("/api/code-refactoring", async (req, res) => {
-  const { stack = "", prompt, description = "" } = req.body;
+  const { stack = "", prompt, description = "", roomIndex } = req.body;
 
   try {
     const data = await service.codeRefactoring({
       code: prompt,
       description,
       stack,
+      roomIndex,
       mode: BUDDY_MODE.CODE_REFACTORING,
     });
 
@@ -84,6 +87,18 @@ router.get("/api/roomList", async (req, res) => {
       containerUid,
     });
     res.send({ result: true, data: { rooms: data } });
+  } catch (error) {
+    return error;
+  }
+});
+
+router.get("api/room/:room_index", async (req, res) => {
+  const { room_index } = req.params;
+  try {
+    const data = await service.getRoomHistory({
+      room_index,
+    });
+    res.send({ result: true, data });
   } catch (error) {
     return error;
   }

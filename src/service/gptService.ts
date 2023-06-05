@@ -5,7 +5,7 @@ const modchatMessage = require("../model/chatMessage");
 const modchatRoom = require("../model/chatRoom");
 
 const openAIConfig = new Configuration({
-  apiKey: "<APIKEY>",
+  apiKey: "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",
 });
 
 const openai = new OpenAIApi(openAIConfig);
@@ -36,10 +36,12 @@ exports.codeErrorSolution = async ({
   code,
   description,
   stack,
+  roomIndex,
 }: {
   code: string;
   description: string;
   stack: string;
+  roomIndex: number;
 }) => {
   try {
     // openai API 에 코드와 질의 템플릿 보내기
@@ -48,6 +50,12 @@ exports.codeErrorSolution = async ({
       description,
       stack,
       template: GPT_TEMPLATE.CODE_ERROR_SOLUTION,
+    });
+
+    await modchatMessage.createMessage({
+      content: { code, description, stack },
+      template_index: 0,
+      room_index: roomIndex,
     });
 
     // 가공되지 않은 답변
@@ -70,6 +78,12 @@ exports.codeErrorSolution = async ({
         rawAnswer.indexOf("</FIXED_CODE>")
       )
       .trim();
+
+    await modchatMessage.saveAnswer({
+      content: { fixedCode, details },
+      template_index: 0,
+      room_index: roomIndex,
+    });
 
     return {
       details,
@@ -85,10 +99,12 @@ exports.codeExplanation = async ({
   code,
   description,
   stack,
+  roomIndex,
 }: {
   code: string;
   description: string;
   stack: string;
+  roomIndex: number;
 }) => {
   try {
     // openai API 에 코드와 질의 템플릿 보내기
@@ -97,6 +113,12 @@ exports.codeExplanation = async ({
       description,
       stack,
       template: GPT_TEMPLATE.CODE_EXPLANATION,
+    });
+
+    await modchatMessage.createMessage({
+      content: { code, description, stack },
+      template_index: 1,
+      room_index: roomIndex,
     });
 
     const rawAnswer = data?.choices[0]?.message.content;
@@ -110,6 +132,12 @@ exports.codeExplanation = async ({
       )
       .trim();
 
+    await modchatMessage.saveAnswer({
+      content: { details },
+      template_index: 1,
+      room_index: roomIndex,
+    });
+
     return details;
   } catch (error) {
     return error;
@@ -121,10 +149,12 @@ exports.codeRefactoring = async ({
   code,
   description,
   stack,
+  roomIndex,
 }: {
   code: string;
   description: string;
   stack: string;
+  roomIndex: number;
 }) => {
   try {
     // openai API 에 코드와 질의 템플릿 보내기
@@ -133,6 +163,12 @@ exports.codeRefactoring = async ({
       description,
       stack,
       template: GPT_TEMPLATE.CODE_ERROR_SOLUTION,
+    });
+
+    await modchatMessage.createMessage({
+      content: { code, description, stack },
+      template_index: 2,
+      room_index: roomIndex,
     });
 
     // 가공되지 않은 답변
@@ -155,6 +191,12 @@ exports.codeRefactoring = async ({
         rawAnswer.indexOf("</FIXED_CODE>")
       )
       .trim();
+
+    await modchatMessage.saveAnswer({
+      content: { fixedCode, details },
+      template_index: 2,
+      room_index: roomIndex,
+    });
 
     return {
       details,
@@ -178,6 +220,15 @@ exports.getRoomList = async ({ containerUid }: { containerUid: string }) => {
   try {
     const rooms = await modchatRoom.getRoomList({ containerUid });
     return rooms;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getRoomHistory = async ({ containerUid }: { containerUid: string }) => {
+  try {
+    const histories = await modchatRoom.getHistory({ containerUid });
+    return histories;
   } catch (error) {
     throw error;
   }
